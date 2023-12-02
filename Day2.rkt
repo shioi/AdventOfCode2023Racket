@@ -42,6 +42,43 @@
                  (set! s (+ s gameid)))
               #f)))))
     s))
+
+;;for solution 2
+;RBG format
+(define (find-minimum lst)
+  (letrec ([minimum (convert-to-list (car lst))]
+           [lst2 (cdr lst)]
+           [loop (lambda (l)
+                   (begin
+                     (if (empty? l)
+                         minimum
+                     (let ([current (convert-to-list (car l))])
+                       (begin
+                         (if (> (mcar current) (mcar minimum))
+                             (set-mcar! minimum (mcar current))
+                             #f)
+                         (if (> (mcar (mcdr current)) (mcar (mcdr minimum)))
+                             (set-mcar! (mcdr minimum) (mcar (mcdr current)))
+                             #f)
+                         (if (> (mcdr (mcdr current)) (mcdr (mcdr minimum)))
+                             (set-mcdr! (mcdr minimum) (mcdr (mcdr current)))
+                             #f)
+                             (loop (cdr l)))))))])
+    (loop (cdr lst))))
+
+(define (find-power lst)
+  (* (mcar lst) (mcar (mcdr lst)) (mcdr (mcdr lst))))
+
+(define (solution2 filename)
+  (let ([s 0])
+    (begin
+      (with-input-from-file filename
+        (thunk
+         (for ([l (in-lines)])
+           (let* ([value (cadr (string-split l ":"))])
+             (set! s (+ s
+                        (find-power (find-minimum (string-split value ";")))))))))
+      s)))
           
-          
-(read-and-result "input2.txt")
+;(read-and-result "input2.txt")
+(solution2 "input2.txt")
